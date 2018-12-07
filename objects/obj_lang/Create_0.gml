@@ -1,0 +1,67 @@
+/// @description Insert description here
+// You can write your code in this editor
+
+for(i = 0; i < 29; i++){
+	lang_known[i] = true;
+}
+
+lang_letter[0,0] = "A";
+lang_letter[0,1] = "a";
+lang_letter[1,0] = "B";
+lang_letter[1,1] = "b";
+lang_letter[2,0] = "C";
+lang_letter[2,1] = "c";
+lang_letter[3,0] = "D";
+lang_letter[3,1] = "d";
+lang_letter[4,0] = "E";
+lang_letter[4,1] = "e";
+lang_letter[5,0] = "F";
+lang_letter[5,1] = "f";
+lang_letter[6,0] = "G";
+lang_letter[6,1] = "g";
+lang_letter[7,0] = "H";
+lang_letter[7,1] = "h";
+lang_letter[8,0] = "I";
+lang_letter[8,1] = "i";
+lang_letter[9,0] = "J";
+lang_letter[9,1] = "j";
+lang_letter[10,0] = "K";
+lang_letter[10,1] = "k";
+lang_letter[11,0] = "L";
+lang_letter[11,1] = "l";
+lang_letter[12,0] = "M";
+lang_letter[12,1] = "m";
+lang_letter[13,0] = "N";
+lang_letter[13,1] = "n";
+lang_letter[14,0] = "O";
+lang_letter[14,1] = "o";
+lang_letter[15,0] = "P";
+lang_letter[15,1] = "p";
+lang_letter[16,0] = "Q";
+lang_letter[16,1] = "q";
+lang_letter[17,0] = "R";
+lang_letter[17,1] = "r";
+lang_letter[18,0] = "S";
+lang_letter[18,1] = "s";
+lang_letter[19,0] = "T";
+lang_letter[19,1] = "t";
+lang_letter[20,0] = "U";
+lang_letter[20,1] = "u";
+lang_letter[21,0] = "V";
+lang_letter[21,1] = "v";
+lang_letter[22,0] = "W";
+lang_letter[22,1] = "w";
+lang_letter[23,0] = "X";
+lang_letter[23,1] = "x";
+lang_letter[24,0] = "Y";
+lang_letter[24,1] = "y";
+lang_letter[25,0] = "Z";
+lang_letter[25,1] = "z";
+lang_letter[26,0] = "Ä";
+lang_letter[26,1] = "ä";
+lang_letter[27,0] = "Ö";
+lang_letter[27,1] = "ö";
+lang_letter[28,0] = "Ü";
+lang_letter[28,1] = "ü";
+lang_letter[29,0] = "ß";
+lang_letter[29,1] = "ß";

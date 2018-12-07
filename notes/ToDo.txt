@@ -1,0 +1,3 @@
+To do:
+- Check ob man die Waffe überhaupt besitzt
+- Collision checks für block2
