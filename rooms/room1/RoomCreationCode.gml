@@ -1,7 +1,7 @@
 randomize();
 
 room_speed = 60;
-instance_create_depth(0,0,0,obj_generator);
+instance_create_depth(0,0,0,obj_generator_v2);
 
 instance_create_depth(0,0,0,obj_system);
 instance_create_depth(0,0,0,obj_view);
