@@ -15,11 +15,17 @@ room_width = (CELL_HEIGHT/16) * 720;
 var width = room_width div CELL_WIDTH;
 var height = room_height div CELL_HEIGHT;
 
-//Create grid
+//Create grids
 grid = ds_grid_create(width, height);
+platforms = ds_grid_create(width, height);
+platforms_len = ds_grid_create(width, height);
+platforms_start = ds_grid_create(width, height);
 
-//Fill the grid with void
+//Fill the grids with void
 ds_grid_set_region(grid, 0, 0, width - 1, height - 1, VOID);
+ds_grid_set_region(platforms, 0, 0, width - 1, height - 1, VOID);
+ds_grid_set_region(platforms_len, 0, 0, width - 1, height - 1, VOID);
+ds_grid_set_region(platforms_start, 0, 0, width - 1, height - 1, VOID);
 
 //Set controller position to top left corner (Room boundings start pos)
 var cx = 0;
@@ -42,56 +48,92 @@ cy = clamp(cy, 1, height -1);
 //Set controller position to top left corner (Inner room start pos)
 var cx = 1;
 var cy = 3; //3 Because of headspace on the upper platform
+
+//Other variables
 cy_headspaces = array_create(99); //saves every line, which creates platforms
 cy_headspaces[0] = cy;
 headspace = cy_headspaces[0];
 headspace_cnt = 1; //amt of lines which were created
 chance_wall = 0; //Determines if a wall is likely to be placed
 
-for(cy = 3; cy < height - 1; cy += headspace){
+//platform variables
+platform_length = 0; //Temp counting variable for platforms grid
+platform_amt = array_create(99); //[cy], contains amount of platforms for the specific cy
+
+for(cy = 3; cy < height - 1; cy += headspace){ //For Y
 	if(cy + headspace < height - 1){
 		headspace = irandom_range(MIN_HEADSPACE, MAX_HEADSPACE);
 		cy_headspaces[headspace_cnt] = headspace;
-		show_debug_message(headspace);
 		headspace_cnt++;
 	}
 	
-	for(cx = 1; cx < width - 1; cx++){
+	for(cx = 1; cx < width - 1; cx++){ //For X
 
-	if(cx == 2){
-		if(grid[# 1, cy] == WALL){
-			ds_grid_set(grid, 2, cy, WALL); //2-Walls at front
-		}else if(grid[# 1, cy] == VOID){
-			ds_grid_set(grid, 2, cy, VOID); //2-void at front
-		}
-	}else if(cx == width - 2){
-		if(grid[# width - 3, cy] == WALL){
-			ds_grid_set(grid, width - 2, cy, WALL); //2-Walls at end
-		}else if(grid[# width - 3, cy] == VOID){
-			ds_grid_set(grid, width - 2, cy, VOID); //2-void at end
-		}
-	}else if(cx > 1){
-		if(grid[# cx - 2, cy] == VOID && grid[# cx - 1, cy] == WALL){
-			ds_grid_set(grid, cx, cy, WALL); //2-Walls
-		}else if(grid[# cx - 2, cy] == WALL && grid[# cx - 1, cy] == VOID){
-			ds_grid_set(grid, cx, cy, VOID); //2-void
-		}else if(irandom_range(1,100) <= chance_wall){ //Wall oder Void setzen
-			ds_grid_set(grid, cx, cy, WALL); //Wall wins
-			chance_wall -= 5;
-		}else{
-			ds_grid_set(grid, cx, cy, VOID); //Wall fails
-			chance_wall += 5;
-		}
-	}else if (cx == 1){ //Erster Block pro Reihe
-		if(irandom_range(0,1) == 1){ //Wall oder Void setzen
-			ds_grid_set(grid, cx, cy, WALL);
-			chance_wall = 90;
-		}else{
-			ds_grid_set(grid, cx, cy, VOID);
-			chance_void = 10;
+		if(cx == 2){ //Mimic 1. first place
+			if(grid[# 1, cy] == WALL){
+				ds_grid_set(grid, 2, cy, WALL); //2-Walls at front
+				platform_length = 2;
+				ds_grid_set(platforms, 2, cy, TILES[platform_length]); //Platform is 2 long
+			}else if(grid[# 1, cy] == VOID){
+				ds_grid_set(grid, 2, cy, VOID); //2-void at front
+				ds_grid_set(platforms, 2, cy, VOID); //2-void at front
+				platform_length = 0;
+			}
+		}else if(cx == width - 2){ //Last Place //Mimic last -1
+			if(grid[# width - 3, cy] == WALL){
+				ds_grid_set(grid, width - 2, cy, WALL); //2-Walls at end
+				ds_grid_set(grid, width - 2, cy, TILE_LAST); //Last tile in platform
+				platform_length = 0;
+			}else if(grid[# width - 3, cy] == VOID){
+				ds_grid_set(grid, width - 2, cy, VOID); //2-void at end
+				ds_grid_set(platforms, width - 2, cy, VOID); //2-void at end
+				platform_length = 0;
+			}
+		}else if(cx > 1){
+			if(grid[# cx - 2, cy] == VOID && grid[# cx - 1, cy] == WALL){
+				ds_grid_set(grid, cx, cy, WALL); //2-Walls
+				platform_length = 2;
+				ds_grid_set(platforms, cx, cy, TILES[platform_length]); //2-Walls
+			}else if(grid[# cx - 2, cy] == WALL && grid[# cx - 1, cy] == VOID){
+				ds_grid_set(grid, cx, cy, VOID); //2-void
+				ds_grid_set(platforms, cx, cy, VOID); //2-void
+				platform_length = 0;
+			}else if(irandom_range(1,100) <= chance_wall){ //Wall oder Void setzen
+				ds_grid_set(grid, cx, cy, WALL); //Wall wins
+				platform_length++;
+				ds_grid_set(platforms, cx, cy, TILES[platform_length]); //Wall wins
+				chance_wall -= 5;
+			}else{
+				ds_grid_set(grid, cx, cy, VOID); //Wall fails
+				ds_grid_set(platforms, cx, cy, VOID); //Wall fails
+				platform_length = 0;
+				chance_wall += 5;
+				if(platforms[# cx - 1, cy] != VOID) ds_grid_set(platforms, cx - 1, cy, TILE_LAST);
+			}
+		}else if (cx == 1){ //Erster Block pro Reihe
+			if(irandom_range(0,1) == 1){ //Wall oder Void setzen
+				ds_grid_set(grid, cx, cy, WALL);
+				ds_grid_set(platforms, cx, cy, TILE_FIRST);
+				chance_wall = 90;
+				platform_length = 1;
+			}else{
+				ds_grid_set(grid, cx, cy, VOID);
+				ds_grid_set(platforms, cx, cy, VOID);
+				chance_wall = 10;
+				platform_length = 0;
+			}
 		}
 	}
-	}
+		tiles = 0; //kind of temp counting var to get the amt of platforms
+		for(x0 = 1; x0 < width - 1; x0++){
+			if(platforms[# x0, cy] == TILE_FIRST){
+				tiles++;
+				ds_grid_set(platforms_start, tiles, cy, x0);
+			}else if(platforms[# x0, cy] == TILE_LAST){
+				ds_grid_set(platforms_len, tiles, cy, x0 - platforms_start[# tiles, cy]);
+			}
+		}
+		platform_amt[cy] = tiles;
 }
 
 //////////////////////////////////////////////////////////////////////////////
@@ -148,39 +190,21 @@ for(i = 1; i < height; i++){
 		/////////////////////////////////////////////////////////////////////////////////
 		//Doppelte Plattform														   //
 		/////////////////////////////////////////////////////////////////////////////////
-		
+
 		if(true){ //Etwas auf die Platform spawnen
 			
-			platform_amt = array_create(99);
-			platform_length = array_create(99);
+			newCy = cy - cy_headspaces[i] - 1; //Platform direkt //=nicht drunter oder drüber
+		
+			usedPlatform = irandom_range(1, platform_amt[newCy]);	
 			
-			newCy = cy - cy_headspaces[i] - 1;
-			//platform_amt[newCy] = 0;
-			//platform_length[newCy] = 0;
-			platform_index[newCy, 0] = 0; //Setzt die länge der ersten platform auf 0
-			
-			for(w = 1; w < width -1; w++){
-				if(grid[# w, newCy] == WALL){
-					platform_length[newCy] += 1;
-				}else if(grid[# w, newCy] == VOID){
-					platform_index[newCy, platform_amt] = platform_length[newCy]; //getLength();	
-					if(platform_length == 1){ //Start
-						platform_start[platform_amt] = w;
-					}else if(platform_length > 0){ //Weiteres void in folge
-						platform_amt[newCy]++;
-						platform_length[newCy] = 0;
-					}
-				}
+			for(i = 0; i < platforms_len[# usedPlatform, newCy]; i++){
+				ds_grid_set(grid, platforms_start[# usedPlatform, newCy] + i, newCy - 1, WALL_UPPER);
 			}
-			
-		usedPlatform = irandom_range(1, platform_amt[newCy]);	
-			
-		for(i = 0; i < platform_index[newCy, usedPlatform]; i++){
-			ds_grid_set(grid, platform_start[platform_amt] + i, newCy - 1, WALL_SPECIAL);
 		}
-		}
-	}
-}
+		
+
+	}//End headspace amt check
+}//End height check
 
 
 ///DRAWING
@@ -191,11 +215,13 @@ var cy = 0;
 //Draw the level
 for(cx = 0; cx < width; cx++){
 	for(cy = 0; cy < height; cy++){
+		
 		if(grid[# cx, cy] == WALL){
-			//Draw Tile
 			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
 		}else if(grid[# cx, cy] == WALL_SPECIAL){
 			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid2);
+		}else if(grid[# cx, cy] == WALL_UPPER){
+			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid3);
 		}
 	}
 }
