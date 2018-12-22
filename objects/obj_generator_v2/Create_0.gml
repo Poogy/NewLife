@@ -41,6 +41,17 @@ for(cy = 1; cy < height; cy++){
 	ds_grid_set(grid, width - 1, cy, WALL);
 }
 
+//Add Terrain
+for(cx = 1; cx < width - 1; cx++){
+	if(irandom_range(1,5) >= 3) ds_grid_set(grid, cx, 1, WALL);
+	if(irandom_range(1,5) >= 3) ds_grid_set(grid, cx, height - 2, WALL);
+}
+for(cy = 2; cy < height - 1; cy++){
+	if(irandom_range(1,5) >= 3) ds_grid_set(grid, 1, cy, WALL);
+	if(irandom_range(1,5) >= 3) ds_grid_set(grid, width - 2, cy, WALL);
+}
+
+
 //Clamp - don´t move out of bounds
 cx = clamp(cx, 1, width -1);
 cy = clamp(cy, 1, height -1);
@@ -197,17 +208,42 @@ for(i = 1; i < height; i++){
 		
 			usedPlatform = irandom_range(1, platform_amt[newCy]);	
 			
-			for(i = 0; i < platforms_len[# usedPlatform, newCy]; i++){
-				ds_grid_set(grid, platforms_start[# usedPlatform, newCy] + i, newCy - 1, WALL_UPPER);
-			}
+			//for(i = 0; i < platforms_len[# usedPlatform, newCy]; i++){
+				//ds_grid_set(grid, platforms_start[# usedPlatform, newCy] + i, newCy - 1, WALL_UPPER);
+			//}
+			
+			ds_grid_set(grid, platforms_start[# usedPlatform, newCy], newCy - 1, WALL_UPPER);
 		}
 		
 
 	}//End headspace amt check
 }//End height check
 
+//////////////////////////////////////////////////////////////////////////////
+//Random Blocks																//
+//////////////////////////////////////////////////////////////////////////////
+for(i = 0; i < 10; i++){
+	cx = irandom_range(1,width-1);
+	cy = irandom_range(1,height-1);
+	
+	if((grid[# cx, cy] == VOID) && (grid[# cx + 1, cy] == VOID)
+		&& (grid[# cx, cy + 1] == VOID) && (grid[# cx + 1, cy + 1] == VOID)){
+		
+		ds_grid_set(grid, cx, cy, WALL_BLOCK);
+		ds_grid_set(grid, cx + 1, cy, WALL_BLOCK);
+		ds_grid_set(grid, cx, cy + 1, WALL_BLOCK);
+		ds_grid_set(grid, cx + 1, cy + 1, WALL_BLOCK);
+		}
+}
 
-///DRAWING
+
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////
+//Drawing																	//
+//////////////////////////////////////////////////////////////////////////////
 //Set controller position to top left corner (Room boundings start pos)
 var cx = 0;
 var cy = 0;
@@ -219,9 +255,11 @@ for(cx = 0; cx < width; cx++){
 		if(grid[# cx, cy] == WALL){
 			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
 		}else if(grid[# cx, cy] == WALL_SPECIAL){
-			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid2);
+			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
 		}else if(grid[# cx, cy] == WALL_UPPER){
-			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid3);
+			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
+		}else if(grid[# cx, cy] == WALL_BLOCK){
+			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
 		}
 	}
 }
