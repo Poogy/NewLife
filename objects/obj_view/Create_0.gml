@@ -1,7 +1,7 @@
 /// @description Insert description here
 // You can write your code in this editor
-smooth = 0.5;
-zoom = 1.5;
+smooth = 0.8;
+zoom = 2;
 
 view_set_wport(view_current, view_wport[view_current] * zoom);
 view_set_hport(view_current, view_hport[view_current] * zoom);

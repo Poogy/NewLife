@@ -4,7 +4,6 @@ draw_self();
 
 //EXÜERIMENTAL
 //Shooting
-
 draw_text(390,100,vspd);
 
 if(attack_rdy == true){
@@ -51,3 +50,22 @@ if(attack_rdy == true){
 
 //DRAWING CURRENT WEAPON
 draw_sprite(obj_weapon_controller.weapon[weapon,1],0,100,30);
+
+//ROPE SWINING
+draw_set_color(c_white);
+if(state == pState.swing) draw_line_width(grappleX, grappleY, ropeX, ropeY, 2);
+
+//Go into cave
+if(aboveTrapdoor || nextToDoor){
+	draw_roundrect_color_ext(x - 64, y - 64, x + 64, y - 16, 30, 30, c_purple, c_purple, false);
+	draw_set_color(c_black);
+	draw_roundrect_color_ext(x - 64, y - 64, x + 64, y - 16, 30, 30, c_black, c_black, true);
+	prev_font = draw_get_font();
+	draw_set_font(fnt_sign);
+	draw_text(x - 48, y - 48, "Press ENTER to go \n into the cave");
+	draw_set_font(prev_font);
+	
+	if(key_accept){
+		state = pState.transition;
+	}
+}

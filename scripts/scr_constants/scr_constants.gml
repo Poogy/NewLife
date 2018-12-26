@@ -7,9 +7,9 @@ CELL_HEIGHT = 32;
 FLOOR = -5;
 WALL = -6;
 VOID = -7;
-WALL_SPECIAL = -8;
-WALL_UPPER = -9;
-WALL_BLOCK = -10;
+WALL_PORTAL = -8;
+WALL_TRAPDOOR = -9;
+WALL_DOOR = -10;
 
 //Layers
 TILELAYER = layer_create(0,"Tiles");

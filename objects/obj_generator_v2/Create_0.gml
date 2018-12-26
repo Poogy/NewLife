@@ -1,5 +1,9 @@
-/// @description Insert description here
+/// @description Just like everything
 // You can write your code in this editor
+//Some Variables not for pgc
+doorActivated = false;
+
+//PGC
 
 //Constants
 scr_constants();
@@ -9,7 +13,7 @@ randomize();
 
 //Room size
 room_width = (CELL_WIDTH/16) * 720;
-room_width = (CELL_HEIGHT/16) * 720;
+room_height = (CELL_HEIGHT/16) * 360;
 
 //Set the grid width and height - Wie viele Objekte in den Raum passen
 var width = room_width div CELL_WIDTH;
@@ -166,14 +170,14 @@ for(i = 1; i < height; i++){
 		
 		//Walls platzieren
 		if(cy_headspaces[i] == 6){
-			ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL_SPECIAL);
+			ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL);
 		}else if(cy_headspaces[i] == 7){
-			ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL_SPECIAL);
-			ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL_SPECIAL);
+			ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL);
+			ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL);
 		}else if(cy_headspaces[i] == 8){
-			ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL_SPECIAL);
-			ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL_SPECIAL);
-			ds_grid_set(grid, cx, cy - cy_headspaces[i] + 2, WALL_SPECIAL);
+			ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL);
+			ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL);
+			ds_grid_set(grid, cx, cy - cy_headspaces[i] + 2, WALL);
 		}
 		
 		if(irandom_range(1,3) >= 2){ //2. Anhang spawnen	
@@ -187,14 +191,14 @@ for(i = 1; i < height; i++){
 			
 			//Walls platzieren
 			if(cy_headspaces[i] == 6){
-										    ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL_SPECIAL);
+										    ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL);
 			}else if(cy_headspaces[i] == 7){
-										    ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL_SPECIAL);
-				if(irandom_range(1,2) == 1) ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL_SPECIAL);
+										    ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL);
+				if(irandom_range(1,2) == 1) ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL);
 			}else if(cy_headspaces[i] == 8){
-				ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL_SPECIAL);
-				if(irandom_range(1,2) == 1){ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL_SPECIAL);
-				if(irandom_range(1,2) == 1) ds_grid_set(grid, cx, cy - cy_headspaces[i] + 2, WALL_SPECIAL);}
+				ds_grid_set(grid, cx, cy - cy_headspaces[i], WALL);
+				if(irandom_range(1,2) == 1){ds_grid_set(grid, cx, cy - cy_headspaces[i] + 1, WALL);
+				if(irandom_range(1,2) == 1) ds_grid_set(grid, cx, cy - cy_headspaces[i] + 2, WALL);}
 			}
 		}
 		
@@ -209,10 +213,10 @@ for(i = 1; i < height; i++){
 			usedPlatform = irandom_range(1, platform_amt[newCy]);	
 			
 			//for(i = 0; i < platforms_len[# usedPlatform, newCy]; i++){
-				//ds_grid_set(grid, platforms_start[# usedPlatform, newCy] + i, newCy - 1, WALL_UPPER);
+				//ds_grid_set(grid, platforms_start[# usedPlatform, newCy] + i, newCy - 1, WALL);
 			//}
 			
-			ds_grid_set(grid, platforms_start[# usedPlatform, newCy], newCy - 1, WALL_UPPER);
+			ds_grid_set(grid, platforms_start[# usedPlatform, newCy], newCy - 1, WALL);
 		}
 		
 
@@ -226,20 +230,63 @@ for(i = 0; i < 10; i++){
 	cx = irandom_range(1,width-1);
 	cy = irandom_range(1,height-1);
 	
+// ##
+// ##
+	
 	if((grid[# cx, cy] == VOID) && (grid[# cx + 1, cy] == VOID)
 		&& (grid[# cx, cy + 1] == VOID) && (grid[# cx + 1, cy + 1] == VOID)){
 		
-		ds_grid_set(grid, cx, cy, WALL_BLOCK);
-		ds_grid_set(grid, cx + 1, cy, WALL_BLOCK);
-		ds_grid_set(grid, cx, cy + 1, WALL_BLOCK);
-		ds_grid_set(grid, cx + 1, cy + 1, WALL_BLOCK);
+		ds_grid_set(grid, cx, cy, WALL);
+		ds_grid_set(grid, cx + 1, cy, WALL);
+		ds_grid_set(grid, cx, cy + 1, WALL);
+		ds_grid_set(grid, cx + 1, cy + 1, WALL);
 		}
 }
 
+//////////////////////////////////////////////////////////////////////////////
+//Close Gaps																//
+//////////////////////////////////////////////////////////////////////////////
+//Set controller position to top left corner (Room boundings start pos)
+var cx = 0;
+var cy = 0;
 
+//  #
+// #X#
+//	#
 
+//Search for inclosed void
+for(cx = 0; cx < width; cx++){
+	for(cy = 0; cy < height; cy++){
+		if(grid[# cx, cy] == VOID){
+			if((grid[# cx + 1, cy] == WALL)
+			&& (grid[# cx - 1, cy] == WALL)
+			&& (grid[# cx, cy + 1] == WALL)
+			&& (grid[# cx, cy - 1] == WALL)) {
+				ds_grid_set(grid, cx, cy, WALL);
+			}
+		}
+	}
+}
 
+//////////////////////////////////////////////////////////////////////////////
+//PlaceDoor																	//
+//////////////////////////////////////////////////////////////////////////////
+//Choose random y for the door head
+cx = width - 1;
+cy = irandom_range(1,height-1);
 
+// XXD
+// XXD
+// ##
+	
+	ds_grid_set(grid, cx, cy, WALL_DOOR);
+	ds_grid_set(grid, cx, cy + 1, WALL_DOOR);
+	ds_grid_set(grid, cx - 1, cy, VOID);
+	ds_grid_set(grid, cx - 1, cy + 1, VOID);
+	ds_grid_set(grid, cx - 1, cy + 2, WALL);
+	ds_grid_set(grid, cx - 2, cy, VOID);
+	ds_grid_set(grid, cx - 2, cy + 1, VOID);
+	ds_grid_set(grid, cx - 2, cy + 2, WALL);
 
 //////////////////////////////////////////////////////////////////////////////
 //Drawing																	//
@@ -254,12 +301,9 @@ for(cx = 0; cx < width; cx++){
 		
 		if(grid[# cx, cy] == WALL){
 			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
-		}else if(grid[# cx, cy] == WALL_SPECIAL){
-			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
-		}else if(grid[# cx, cy] == WALL_UPPER){
-			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
-		}else if(grid[# cx, cy] == WALL_BLOCK){
-			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_solid);
+		}
+		else if((grid[# cx, cy] == WALL_DOOR) && (grid[# cx, cy + 1] == WALL_DOOR)){
+			layer_sprite_create(TILELAYER, cx * CELL_WIDTH, cy * CELL_HEIGHT, spr_brick_door);
 		}
 	}
 }
