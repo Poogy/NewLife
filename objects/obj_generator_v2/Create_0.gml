@@ -273,7 +273,7 @@ for(cx = 0; cx < width; cx++){
 //////////////////////////////////////////////////////////////////////////////
 //Choose random y for the door head
 cx = width - 1;
-cy = irandom_range(1,height-1);
+cy = irandom_range(2,height-2);
 
 // XXD
 // XXD

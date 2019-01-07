@@ -43,8 +43,12 @@ y = yp;
 //Above Trapdoor?
 obj_player.aboveTrapdoor = trapdoor_meeting;
 
-//Touching a door?
+//Touching a door?/room_restart();
 obj_player.nextToDoor = x_meeting_door || y_meeting_door;
+if ((obj_player.nextToDoor) && (instance_number(obj_enemy) == 0)){ 
+		obj_player.state = pState.transition;
+}
+
 
 //Return boolean
 return x_meeting || y_meeting || center_meeting;

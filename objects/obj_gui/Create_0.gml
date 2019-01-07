@@ -3,3 +3,6 @@
 a = 0;
 wait = true;
 firstCycle = true;
+
+//Level
+stage = -1;

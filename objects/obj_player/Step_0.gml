@@ -7,7 +7,8 @@ scr_check_alive();
 switch(state){
 	case pState.normal:
 	{
-		target = instance_nearest(x,y,obj_block2);
+			
+		target = instance_nearest(x,y,obj_block2); //WIP
 
 		hspd = (key_right - key_left)*moveSpeed;
 
@@ -65,7 +66,7 @@ switch(state){
 		
 		if(aboveTrapdoor)
 			y += 1;
-		else if(nextToDoor){
+		else { //nextToDoor
 			x += 1;
 		}
 	}break;
